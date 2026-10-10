@@ -58,12 +58,20 @@ async function loadCars() {
 function renderFleet() {
   const shown = cars.filter((c) => isOwner || c.status !== 'hidden');
   fleetEl.replaceChildren();
+  emptyEl.querySelector('button')?.remove();
   emptyEl.hidden = shown.length > 0;
   if (!shown.length) {
     emptyEl.querySelector('b').textContent = 'No cars listed yet';
     emptyEl.querySelector('span').textContent = isOwner
       ? 'Use "Add a car" to list your first car with photos and prices.'
       : 'Call or text (619) 310-7759 to ask what’s available.';
+    if (isOwner) {
+      const b = el('button', 'btn ink small', 'Add our Mercedes and Altima');
+      b.type = 'button';
+      b.style.marginTop = '12px';
+      b.onclick = () => addStarterCars(b);
+      emptyEl.append(b);
+    }
   }
 
   for (const c of shown) {
@@ -285,6 +293,33 @@ $('ed-delete').onclick = async () => {
   } catch (err) { console.error(err); msg.className = 'msg'; msg.textContent = 'Couldn’t delete. Try again.'; }
 };
 $('addCar').onclick = () => openEditor(null);
+
+// One-click starter inventory (example prices; edit after adding)
+const STARTER_CARS = [
+  { year: 2025, make: 'Mercedes-Benz', model: 'C300', category: 'Luxury sedan', tag: 'Weekend pick', status: 'available',
+    description: 'For date nights, weddings and business trips.', seats: 5, odometer: 25900, fuel: 'Premium gas',
+    minAge: 25, deposit: 750, milesPerDay: 150, dailyRate: 95, multiDayRate: 85, weeklyRate: 525, monthlyRate: 1700, photos: [], sortOrder: 1 },
+  { year: 2024, make: 'Nissan', model: 'Altima S', category: 'Commuter sedan', tag: 'Best for monthly', status: 'available',
+    description: 'Comfortable and easy on gas. Good for commuting, travel nursing, or the weeks your own car is in the shop.',
+    seats: 5, odometer: 43000, fuel: 'Regular gas', minAge: 21, deposit: 300, milesPerDay: 200, milesPerMonth: 2500,
+    dailyRate: 49, multiDayRate: 45, weeklyRate: 275, monthlyRate: 1150, photos: [], sortOrder: 2 },
+];
+
+async function addStarterCars(btn) {
+  btn.disabled = true;
+  btn.textContent = 'Adding...';
+  try {
+    for (const c of STARTER_CARS) {
+      const res = await client.models.Car.create(c, { authMode: 'userPool' });
+      if (res.errors?.length) throw new Error(res.errors[0].message);
+    }
+    await loadCars();
+  } catch (e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.textContent = 'Couldn’t add them. Try again.';
+  }
+}
 
 // ---------- Owner login ----------
 const loginDlg = $('login');
