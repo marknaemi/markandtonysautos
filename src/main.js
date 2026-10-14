@@ -45,6 +45,15 @@ function builtinPhotos(c) {
   return hit ? hit[1] : [];
 }
 
+// Direct Turo listing for each car, when we have it; otherwise the host profile.
+const TURO_LISTINGS = [
+  [/camry/i, 'https://turo.com/us/en/car-rental/united-states/spring-valley-ca/toyota/camry-hybrid/3938311'],
+];
+function turoLink(c) {
+  const hit = TURO_LISTINGS.find(([re]) => re.test([c.make, c.model].join(' ')));
+  return hit ? hit[1] + '?utm_source=website' : TURO_URL;
+}
+
 function setImg(img, path) {
   if (path.startsWith('/')) { img.src = path; return; }
   photoUrl(path).then((u) => { img.src = u; }).catch(() => { img.alt = 'Photo unavailable'; });
@@ -74,7 +83,8 @@ async function loadCars() {
 function builtinCars() {
   return missingStarters().map((s) => ({
     ...s, id: 'builtin-' + s.sortOrder, builtin: true,
-    dailyRate: null, multiDayRate: null, weeklyRate: null, monthlyRate: null, deposit: null, milesPerDay: null, milesPerMonth: null,
+    dailyRate: null, multiDayRate: null, weeklyRate: null, monthlyRate: null, deposit: null,
+    milesPerDay: s.milesConfirmed ? s.milesPerDay : null, milesPerMonth: null,
   }));
 }
 const listedCars = () => [...cars, ...builtinCars()].sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
@@ -141,6 +151,7 @@ function renderFleet() {
     t.append(el('small', null, [c.year, c.category].filter(Boolean).join(' · ')));
     t.append(el('h3', null, [c.make, c.model].filter(Boolean).join(' ')));
     if (c.description) t.append(el('p', null, c.description));
+    if (c.features?.length) t.append(el('p', 'car-features', c.features.join(' · ')));
     card.append(t);
 
     const specs = el('dl', 'specs');
@@ -166,14 +177,17 @@ function renderFleet() {
     const more = el('details', 'car-more');
     more.append(el('summary', null, 'See details'));
     const turo = el('div', 'turo-box');
-    const qrLink = el('a'); qrLink.href = TURO_URL; qrLink.target = '_blank'; qrLink.rel = 'noopener';
+    const link = turoLink(c);
+    const qrLink = el('a'); qrLink.href = link; qrLink.target = '_blank'; qrLink.rel = 'noopener';
     const qr = el('img'); qr.src = '/turo-qr.png'; qr.width = 120; qr.height = 120; qr.loading = 'lazy';
     qr.alt = 'QR code for our Turo profile';
     qrLink.append(qr);
     const tt = el('div');
     tt.append(el('b', null, 'Rent this car on Turo'),
-      el('p', null, 'Scan the code or tap below to book ' + carName(c) + ' through our Turo profile.'));
-    const tb = el('a', 'btn gold small', 'Book on Turo'); tb.href = TURO_URL; tb.target = '_blank'; tb.rel = 'noopener';
+      el('p', null, link === TURO_URL
+        ? 'Scan the code or tap below to book ' + carName(c) + ' through our Turo profile.'
+        : 'Tap below to book ' + carName(c) + ' on Turo, or scan the code to see all our cars.'));
+    const tb = el('a', 'btn gold small', 'Book on Turo'); tb.href = link; tb.target = '_blank'; tb.rel = 'noopener';
     tt.append(tb);
     turo.append(qrLink, tt);
     more.append(turo);
@@ -358,8 +372,9 @@ const STARTER_CARS = [
     seats: 5, odometer: 43000, fuel: 'Regular gas', minAge: 21, deposit: 300, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 49, multiDayRate: 45, weeklyRate: 275, monthlyRate: 1150, photos: [], sortOrder: 2 },
   { year: 2025, make: 'Toyota', model: 'Camry XLE Hybrid', category: 'Hybrid sedan', tag: 'Great on gas', status: 'available',
-    description: 'The all-new 2025 Camry XLE Hybrid. Leather, roomy and quiet, and easy on gas for road trips or everyday driving.',
-    seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
+    description: 'The all-new 2025 Camry XLE Hybrid. Roomy and quiet, and about 48 MPG for road trips or everyday driving.',
+    features: ['48 MPG', 'Automatic', 'Adaptive cruise control', 'Backup camera', 'Blind spot warning', 'Brake assist', 'Bluetooth'],
+    milesConfirmed: true, seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 59, multiDayRate: 54, weeklyRate: 330, monthlyRate: 1300, photos: [], sortOrder: 3 },
   { year: 2024, make: 'Honda', model: 'HR-V Sport', category: 'Compact SUV', tag: 'Room for gear', status: 'available',
     description: 'A comfortable compact SUV with plenty of cargo room. Good for weekend trips, moving day or the whole family.',
