@@ -213,3 +213,10 @@ dialog.login .editor-body { gap: 14px; }
 .turo-line a { font-weight: 600; }
 .turo-card { display: grid; gap: 8px; justify-items: start; }
 .turo-card img { width: 140px; height: 140px; border-radius: 8px; background: #fff; padding: 6px; }
+.car-more { margin: 0 16px 12px; border: 1px solid var(--line); border-radius: var(--radius); }
+.car-more summary { cursor: pointer; padding: 10px 12px; font-weight: 600; }
+.turo-box { display: flex; gap: 14px; align-items: center; padding: 4px 12px 14px; }
+.turo-box img { width: 120px; height: 120px; border-radius: 8px; background: #fff; padding: 5px; flex: none; }
+.turo-box div { display: grid; gap: 6px; justify-items: start; }
+.turo-box p { color: var(--muted); font-size: 14px; }
+@media (max-width: 400px) { .turo-box { flex-direction: column; align-items: flex-start; } }

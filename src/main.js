@@ -15,6 +15,7 @@ let cars = [];
 let editing = null;
 const slideIdx = {};
 const urlCache = new Map();
+const TURO_URL = 'https://turo.com/host/55884456?utm_source=website';
 
 const num = (v) => { const n = parseFloat(String(v ?? '').replace(/[^0-9.]/g, '')); return Number.isFinite(n) ? n : null; };
 const int = (n) => (n == null ? '' : Math.round(n).toLocaleString('en-US'));
@@ -124,6 +125,22 @@ function renderFleet() {
       ['Monthly', c.monthlyRate, c.milesPerMonth ? int(c.milesPerMonth) + ' mi' : '/ month']]
       .forEach(([k, v, unit]) => { const d = el('div'); d.append(el('span', null, k), el('b', null, money(v)), el('em', null, unit)); rates.append(d); });
     card.append(rates);
+
+    const more = el('details', 'car-more');
+    more.append(el('summary', null, 'See details'));
+    const turo = el('div', 'turo-box');
+    const qrLink = el('a'); qrLink.href = TURO_URL; qrLink.target = '_blank'; qrLink.rel = 'noopener';
+    const qr = el('img'); qr.src = '/turo-qr.png'; qr.width = 120; qr.height = 120; qr.loading = 'lazy';
+    qr.alt = 'QR code for our Turo profile';
+    qrLink.append(qr);
+    const tt = el('div');
+    tt.append(el('b', null, 'Rent this car on Turo'),
+      el('p', null, 'Scan the code or tap below to book ' + carName(c) + ' through our Turo profile.'));
+    const tb = el('a', 'btn gold small', 'Book on Turo'); tb.href = TURO_URL; tb.target = '_blank'; tb.rel = 'noopener';
+    tt.append(tb);
+    turo.append(qrLink, tt);
+    more.append(turo);
+    card.append(more);
 
     const act = el('div', 'card-actions');
     const req = el('a', 'btn ink', c.status === 'rented' ? 'Ask when it’s free' : 'Request this car');
