@@ -209,3 +209,7 @@ fieldset .wide { grid-column: 1 / -1; }
 dialog.login { width: min(440px, calc(100vw - 32px)); }
 dialog.login .editor-body { gap: 14px; }
 .ok-result { border-left-color: #4C9A6A; }
+.turo-line { margin-top: 8px; }
+.turo-line a { font-weight: 600; }
+.turo-card { display: grid; gap: 8px; justify-items: start; }
+.turo-card img { width: 140px; height: 140px; border-radius: 8px; background: #fff; padding: 6px; }
