@@ -32,7 +32,19 @@ async function photoUrl(path) {
   return url.toString();
 }
 
+// Built-in photos (public/cars/) shown when a car has no uploaded photos yet.
+const BUILTIN_PHOTOS = [
+  [/camry/i, ['/cars/camry-1.jpg']],
+  [/altima/i, ['/cars/altima-1.jpg']],
+];
+function builtinPhotos(c) {
+  const name = [c.make, c.model].join(' ');
+  const hit = BUILTIN_PHOTOS.find(([re]) => re.test(name));
+  return hit ? hit[1] : [];
+}
+
 function setImg(img, path) {
+  if (path.startsWith('/')) { img.src = path; return; }
   photoUrl(path).then((u) => { img.src = u; }).catch(() => { img.alt = 'Photo unavailable'; });
 }
 
@@ -66,12 +78,21 @@ function renderFleet() {
     emptyEl.querySelector('span').textContent = isOwner
       ? 'Use "Add a car" to list your first car with photos and prices.'
       : 'Call or text (619) 310-7759 to ask what’s available.';
-    if (isOwner) {
-      const b = el('button', 'btn ink small', 'Add our Mercedes and Altima');
+  }
+
+  if (isOwner) {
+    const missing = missingStarters();
+    if (missing.length) {
+      const b = el('button', 'btn ink small', 'Add to site: ' + missing.map((m) => m.make + ' ' + m.model).join(', '));
       b.type = 'button';
       b.style.marginTop = '12px';
-      b.onclick = () => addStarterCars(b);
+      b.onclick = () => addStarterCars(b, missing);
       emptyEl.append(b);
+      emptyEl.hidden = false;
+      if (shown.length) {
+        emptyEl.querySelector('b').textContent = 'More cars ready to add';
+        emptyEl.querySelector('span').textContent = 'One click lists them with example prices. Edit each one afterward.';
+      }
     }
   }
 
@@ -83,7 +104,8 @@ function renderFleet() {
     top.append(el('span', 'st' + (c.status === 'rented' || c.status === 'hidden' ? ' rented' : ''), st));
     card.append(top);
 
-    const photos = (c.photos || []).filter(Boolean);
+    const uploaded = (c.photos || []).filter(Boolean);
+    const photos = uploaded.length ? uploaded : builtinPhotos(c);
     const ph = el('div', 'photo');
     if (photos.length) {
       const i = Math.min(slideIdx[c.id] || 0, photos.length - 1);
@@ -320,13 +342,25 @@ const STARTER_CARS = [
     description: 'Comfortable and easy on gas. Good for commuting, travel nursing, or the weeks your own car is in the shop.',
     seats: 5, odometer: 43000, fuel: 'Regular gas', minAge: 21, deposit: 300, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 49, multiDayRate: 45, weeklyRate: 275, monthlyRate: 1150, photos: [], sortOrder: 2 },
+  { year: 2025, make: 'Toyota', model: 'Camry', category: 'Hybrid sedan', tag: 'Great on gas', status: 'available',
+    description: 'The all-new Camry hybrid. Roomy, quiet and easy on gas for road trips or everyday driving.',
+    seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
+    dailyRate: 59, multiDayRate: 54, weeklyRate: 330, monthlyRate: 1300, photos: [], sortOrder: 3 },
 ];
 
-async function addStarterCars(btn) {
+function missingStarters() {
+  const names = cars.map((c) => [c.make, c.model].join(' ').toLowerCase());
+  return STARTER_CARS.filter((s) => {
+    const key = s.model.split(' ')[0].toLowerCase();
+    return !names.some((n) => n.includes(key));
+  });
+}
+
+async function addStarterCars(btn, list) {
   btn.disabled = true;
   btn.textContent = 'Adding...';
   try {
-    for (const c of STARTER_CARS) {
+    for (const c of list) {
       const res = await client.models.Car.create(c, { authMode: 'userPool' });
       if (res.errors?.length) throw new Error(res.errors[0].message);
     }
