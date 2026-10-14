@@ -342,8 +342,8 @@ const STARTER_CARS = [
     description: 'Comfortable and easy on gas. Good for commuting, travel nursing, or the weeks your own car is in the shop.',
     seats: 5, odometer: 43000, fuel: 'Regular gas', minAge: 21, deposit: 300, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 49, multiDayRate: 45, weeklyRate: 275, monthlyRate: 1150, photos: [], sortOrder: 2 },
-  { year: 2025, make: 'Toyota', model: 'Camry', category: 'Hybrid sedan', tag: 'Great on gas', status: 'available',
-    description: 'The all-new Camry hybrid. Roomy, quiet and easy on gas for road trips or everyday driving.',
+  { year: 2025, make: 'Toyota', model: 'Camry XLE Hybrid', category: 'Hybrid sedan', tag: 'Great on gas', status: 'available',
+    description: 'The all-new 2025 Camry XLE Hybrid. Leather, roomy and quiet, and easy on gas for road trips or everyday driving.',
     seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 59, multiDayRate: 54, weeklyRate: 330, monthlyRate: 1300, photos: [], sortOrder: 3 },
 ];
