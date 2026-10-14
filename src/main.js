@@ -36,6 +36,7 @@ async function photoUrl(path) {
 const BUILTIN_PHOTOS = [
   [/camry/i, ['/cars/camry-1.jpg']],
   [/altima/i, ['/cars/altima-1.jpg']],
+  [/mercedes|c300/i, ['/cars/mercedes-1.jpg']],
   // [/hr-?v/i, ['/cars/hrv-1.jpg']],  add once the photo arrives
 ];
 function builtinPhotos(c) {
