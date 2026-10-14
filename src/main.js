@@ -36,6 +36,7 @@ async function photoUrl(path) {
 const BUILTIN_PHOTOS = [
   [/camry/i, ['/cars/camry-1.jpg']],
   [/altima/i, ['/cars/altima-1.jpg']],
+  // [/hr-?v/i, ['/cars/hrv-1.jpg']],  add once the photo arrives
 ];
 function builtinPhotos(c) {
   const name = [c.make, c.model].join(' ');
@@ -346,6 +347,10 @@ const STARTER_CARS = [
     description: 'The all-new 2025 Camry XLE Hybrid. Leather, roomy and quiet, and easy on gas for road trips or everyday driving.',
     seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 59, multiDayRate: 54, weeklyRate: 330, monthlyRate: 1300, photos: [], sortOrder: 3 },
+  { year: 2024, make: 'Honda', model: 'HR-V Sport', category: 'Compact SUV', tag: 'Room for gear', status: 'available',
+    description: 'A comfortable compact SUV with plenty of cargo room. Good for weekend trips, moving day or the whole family.',
+    seats: 5, fuel: 'Regular gas', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
+    dailyRate: 55, multiDayRate: 50, weeklyRate: 310, monthlyRate: 1250, photos: [], sortOrder: 4 },
 ];
 
 function missingStarters() {
