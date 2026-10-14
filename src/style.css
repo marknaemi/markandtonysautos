@@ -220,3 +220,5 @@ dialog.login .editor-body { gap: 14px; }
 .turo-box div { display: grid; gap: 6px; justify-items: start; }
 .turo-box p { color: var(--muted); font-size: 14px; }
 @media (max-width: 400px) { .turo-box { flex-direction: column; align-items: flex-start; } }
+.rates.rates-turo { grid-template-columns: 1fr; }
+.rates.rates-turo b { font-size: 15px; }

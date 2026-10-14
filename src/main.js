@@ -69,8 +69,17 @@ async function loadCars() {
   }
 }
 
+// Fleet cars not yet saved on the site still show, with prices left to Turo.
+function builtinCars() {
+  return missingStarters().map((s) => ({
+    ...s, id: 'builtin-' + s.sortOrder, builtin: true,
+    dailyRate: null, multiDayRate: null, weeklyRate: null, monthlyRate: null, deposit: null, milesPerDay: null, milesPerMonth: null,
+  }));
+}
+const listedCars = () => [...cars, ...builtinCars()].sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+
 function renderFleet() {
-  const shown = cars.filter((c) => isOwner || c.status !== 'hidden');
+  const shown = listedCars().filter((c) => isOwner || c.status !== 'hidden');
   fleetEl.replaceChildren();
   emptyEl.querySelector('button')?.remove();
   emptyEl.hidden = shown.length > 0;
@@ -144,7 +153,11 @@ function renderFleet() {
     if (specs.children.length) card.append(specs);
 
     const rates = el('div', 'rates');
-    [['Daily', c.dailyRate, '/ day'], ['3+ days', c.multiDayRate, '/ day'], ['Weekly', c.weeklyRate, '/ week'],
+    if (c.builtin) {
+      rates.classList.add('rates-turo');
+      const d = el('div'); d.append(el('span', null, 'Price'), el('b', null, 'See current price on Turo'));
+      rates.append(d);
+    } else [['Daily', c.dailyRate, '/ day'], ['3+ days', c.multiDayRate, '/ day'], ['Weekly', c.weeklyRate, '/ week'],
       ['Monthly', c.monthlyRate, c.milesPerMonth ? int(c.milesPerMonth) + ' mi' : '/ month']]
       .forEach(([k, v, unit]) => { const d = el('div'); d.append(el('span', null, k), el('b', null, money(v)), el('em', null, unit)); rates.append(d); });
     card.append(rates);
@@ -170,7 +183,7 @@ function renderFleet() {
     req.href = '#book';
     req.onclick = () => { $('rq-car').value = carName(c); };
     act.append(req);
-    if (isOwner) { const ed = el('button', 'btn line', 'Edit'); ed.type = 'button'; ed.onclick = () => openEditor(c); act.append(ed); }
+    if (isOwner && !c.builtin) { const ed = el('button', 'btn line', 'Edit'); ed.type = 'button'; ed.onclick = () => openEditor(c); act.append(ed); }
     card.append(act);
     fleetEl.append(card);
   }
@@ -178,7 +191,7 @@ function renderFleet() {
   const sel = $('rq-car');
   const keep = sel.value;
   sel.replaceChildren(el('option', null, 'Any available car'));
-  cars.filter((c) => c.status !== 'hidden').forEach((c) => sel.append(el('option', null, carName(c))));
+  listedCars().filter((c) => c.status !== 'hidden').forEach((c) => sel.append(el('option', null, carName(c))));
   if ([...sel.options].some((o) => o.value === keep)) sel.value = keep;
 }
 
