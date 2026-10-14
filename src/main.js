@@ -167,7 +167,9 @@ function renderFleet() {
     const rates = el('div', 'rates');
     if (c.builtin) {
       rates.classList.add('rates-turo');
-      const d = el('div'); d.append(el('span', null, 'Price'), el('b', null, 'See current price on Turo'));
+      const d = el('div');
+      if (c.fromRate) d.append(el('span', null, 'Price'), el('b', null, 'From ' + money(c.fromRate) + ' / day'), el('em', null, 'Exact price on Turo'));
+      else d.append(el('span', null, 'Price'), el('b', null, 'See current price on Turo'));
       rates.append(d);
     } else [['Daily', c.dailyRate, '/ day'], ['3+ days', c.multiDayRate, '/ day'], ['Weekly', c.weeklyRate, '/ week'],
       ['Monthly', c.monthlyRate, c.milesPerMonth ? int(c.milesPerMonth) + ' mi' : '/ month']]
@@ -374,7 +376,7 @@ const STARTER_CARS = [
   { year: 2025, make: 'Toyota', model: 'Camry XLE Hybrid', category: 'Hybrid sedan', tag: 'Great on gas', status: 'available',
     description: 'The all-new 2025 Camry XLE Hybrid. Roomy and quiet, and about 48 MPG for road trips or everyday driving.',
     features: ['48 MPG', 'Automatic', 'Adaptive cruise control', 'Backup camera', 'Blind spot warning', 'Brake assist', 'Bluetooth'],
-    milesConfirmed: true, seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
+    milesConfirmed: true, fromRate: 83, seats: 5, fuel: 'Hybrid (regular gas)', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 59, multiDayRate: 54, weeklyRate: 330, monthlyRate: 1300, photos: [], sortOrder: 3 },
   { year: 2024, make: 'Honda', model: 'HR-V Sport', category: 'Compact SUV', tag: 'Room for gear', status: 'available',
     description: 'A comfortable compact SUV with plenty of cargo room. Good for weekend trips, moving day or the whole family.',
