@@ -48,6 +48,7 @@ function builtinPhotos(c) {
 // Direct Turo listing for each car, when we have it; otherwise the host profile.
 const TURO_LISTINGS = [
   [/camry/i, 'https://turo.com/us/en/car-rental/united-states/spring-valley-ca/toyota/camry-hybrid/3938311'],
+  [/hr-?v/i, 'https://turo.com/us/en/suv-rental/united-states/spring-valley-ca/honda/hr-v/3941764'],
 ];
 function turoLink(c) {
   const hit = TURO_LISTINGS.find(([re]) => re.test([c.make, c.model].join(' ')));
@@ -380,7 +381,8 @@ const STARTER_CARS = [
     dailyRate: 59, multiDayRate: 54, weeklyRate: 330, monthlyRate: 1300, photos: [], sortOrder: 3 },
   { year: 2024, make: 'Honda', model: 'HR-V Sport', category: 'Compact SUV', tag: 'Room for gear', status: 'available',
     description: 'A comfortable compact SUV with plenty of cargo room. Good for weekend trips, moving day or the whole family.',
-    seats: 5, fuel: 'Regular gas', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
+    features: ['29 MPG', 'Automatic', 'Adaptive cruise control', 'Backup camera', 'Blind spot warning', 'Brake assist', 'Bluetooth'],
+    fromRate: 63, seats: 5, fuel: 'Regular gas', minAge: 21, deposit: 350, milesPerDay: 200, milesPerMonth: 2500,
     dailyRate: 55, multiDayRate: 50, weeklyRate: 310, monthlyRate: 1250, photos: [], sortOrder: 4 },
 ];
 
